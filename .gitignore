@@ -1,1 +1,4 @@
 dataParsingScripts/*.csv
+db/*.csv
+db/insertCities.sql
+db/insertWinds.sql
