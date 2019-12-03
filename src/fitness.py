@@ -53,7 +53,7 @@ def load_matrix_power(filename, wind_turbines):
     except IOError:
         print("Error on reading JSON file, check that file exists!")
     except:
-        print("Something goes wrong in file manipulation")
+        print("Something goes wrong in file manipulation.")
     finally:
         mean_power_file.close()
 
