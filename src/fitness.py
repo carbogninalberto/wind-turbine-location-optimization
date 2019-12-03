@@ -7,6 +7,8 @@ this file contains the fitness functions of the multi-objectives problem
 import numpy as np
 
 # FUNCTIONS
+
+#################### OBJECTIVE 1: F(S) ####################
 '''
 Fitness function for turbine placing:
 F(S) = sum_turbines sum_cities S_t,n f(t,n) z(n)
@@ -37,6 +39,14 @@ def load_matrix_power(filename):
     # close csv
     return matrix
 
+###########################################################
+
+#################### OBJECTIVE 2: PP(S) ####################
+
+
+
+###########################################################
+
 #TESTS
 
 if __name__ == "__main__":
@@ -44,8 +54,8 @@ if __name__ == "__main__":
     
     #testing wind_turbine_power_fitness
     print("<EXECUTE OUTPUT> \twind_turbine_power_fitness()\n")
-    test_matrix = np.array([[0,3,1],[0,2,0],[2,5,1]])
-    test_matrix_power = np.array([[0,10,30],[0,10,0],[5,10,20]])
+    test_matrix = np.array([[0,3,1],[0,2,0],[1,5,1]])
+    test_matrix_power = np.array([[0,0,0],[5,10,20],[5,10,20]])
     
     print("fitness: ")
     print(wind_turbine_power_fitness(test_matrix, test_matrix_power))
