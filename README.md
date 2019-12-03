@@ -7,10 +7,10 @@ In this project we aim to solve a multi objective optimization problem using **E
 
 ### 🚀 Project Timeline
 - [x] Defining Main Project Objectives
-- [ ] Reading Papers about the topic
+- [x] Reading Papers about the topic
 - [x] Gather Data
 - [x] Clean Data
-- [ ] Statistical Inference on data
+- [x] Statistical Inference on data
 - [x] Test [***windpowerlib***](https://github.com/wind-python/windpowerlib) as fitness function for power generation of wind turbines
 - [ ] Minimizing Objective for placing **power plant** given wind turbines and viceversa
 - [ ] Collect **matplotlib** graphs, Pareto fronts in particular
