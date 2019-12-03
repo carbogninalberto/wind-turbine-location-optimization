@@ -1,0 +1,14 @@
+[
+    {
+        "turbine_type": "E-115/3000",
+        "hub_height": 92
+    },
+    {
+         "wind_speed_model": "logarithmic",
+         "density_model": "ideal_gas",
+         "temperature_model": "linear_gradient",
+         "power_output_model": "power_curve",
+         "density_correction": "True",
+         "obstacle_height": 0
+    }
+]
