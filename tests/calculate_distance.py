@@ -21,10 +21,10 @@ class TestDistance(unittest.TestCase):
                 if(temp>maxd):
                     maxd=temp
         print(maxd)
-        lat1 = radians(52.2296756)
-        lon1 = radians(21.0122287)
-        lat2 = radians(52.406374)
-        lon2 = radians(16.9251681)
+        lat1 = 52.2296756
+        lon1 = 21.0122287
+        lat2 = 52.406374
+        lon2 = 16.9251681
         result = int(distance(lat1, lon1, lat2, lon2))
         print(result)
         for i in range(10):

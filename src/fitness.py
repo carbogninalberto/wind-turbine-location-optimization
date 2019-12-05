@@ -7,6 +7,15 @@ this file contains the fitness functions of the multi-objectives problem
 import numpy as np
 import json
 from math import sin, cos, sqrt, atan2, radians
+from random import Random
+from time import time
+from math import cos
+from math import pi
+from inspyred import ec
+from inspyred.ec import terminators
+
+points1=[]
+contains_turbines = [False] * 110
 
 # FUNCTIONS
 
@@ -65,8 +74,11 @@ def load_matrix_power(filename, wind_turbines):
 
 ###########################################################
 def distance(lat1, lon1, lat2, lon2):
-
-    R = 6373.0
+    R = 6371.0
+    lat1 = radians(lat1)
+    lon1 = radians(lon1)
+    lat2 = radians(lat2)
+    lon2 = radians(lon2)
     dlon = lon2 - lon1
     dlat = lat2 - lat1
 
@@ -76,45 +88,53 @@ def distance(lat1, lon1, lat2, lon2):
     distance = R * c
     return distance
 
-def generate_power_plants(random, args):
+def distancec(p1, p2):
+    return distance(p1[0], p1[1], p2[0], p2[1])
+
+def generate_power_plants(random, *args):
     base_lat = -20.41
     base_lon = -44.95
     k=2
     return [base_lat+random.uniform(-k,k), base_lon+random.uniform(-k,k)]
 
 
-def evaluate_power_plants(candidates, args):
+def evaluate_power_plants(candidates, *args):
     turbine_cables_weight = 3.4
     fitness = []
     for cs in candidates:
         d=0
-        for i in range(len(points)):
+        for i in range(len(points1)):
             if(contains_turbines[i]):
-                d+=distance(points[i], cs)*turbine_cables_weight
+                d+=distancec(points1[i], cs)*turbine_cables_weight
             else:
-                d+=distance(points[i], cs)
+                d+=distancec(points1[i], cs)
         fitness.append(d)
 
     return fitness
 
 
 def calculate_distance_cost(turbines_matrix, *args):
-    contains_turbines = [False] * len(turbines_matrix[0])
-    for i in range(len(turbines_matrix)):
+
+    for i in range(len(turbines_matrix)-3):
         for j in range(len(turbines_matrix[i])):
-            found = turbines_matrix[i][j] > 0
+            found = turbines_matrix[i+3][j] > 0
             contains_turbines[j] = (contains_turbines[j] or found)
 
     rand = Random()
     rand.seed(int(time()))
     es = ec.ES(rand)
 
+    for i in range(len(turbines_matrix[0])):
+        points1.append([turbines_matrix[1][i], turbines_matrix[2][i]])
+    #print(points1)
+
     es.terminator = terminators.evaluation_termination
-    final_pop = es.evolve(generator=evaluate_power_plants,
+    final_pop = es.evolve(generator=generate_power_plants,
                           evaluator=evaluate_power_plants,
-                          pop_size=200,
+                          pop_size=20,
                           maximize=False,
-                          max_evaluations=10000)
+                          max_evaluations=100
+                          )#args=conf)
     # Sort and print the best individual, who will be at index 0.
     final_pop.sort(reverse=True)
     #print final_pop
