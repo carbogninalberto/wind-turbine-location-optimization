@@ -1,6 +1,6 @@
 # 🎏 Wind Turbines Multi-Objective Optimization
 In this project we aim to solve a multi objective optimization problem using **Evolutionary Algorithms** and **Swarm Intelligence Optimization**.
-- [ ] EA
+- [x] EA (partially implemented)
 - [ ] SO
 
 💡 We actually found a dataset containing information about the weather in Brasil, [here the reference](https://www.kaggle.com/PROPPG-PPG/hourly-weather-surface-brazil-southeast-region).
@@ -18,8 +18,8 @@ Given a certain array of budgets, (for example [ "5,000,000.00$", "12,000,000.00
 - [x] Statistical Inference on data
 - [x] Test [***windpowerlib***](https://github.com/wind-python/windpowerlib) as fitness function for power generation of wind turbines
 - [x] Implement fitness function for wind turbines placement
-- [ ] Gather Data about cost and activation function the choosen wind turbines
-- [ ] Euclidian distance fitness function for placing the **power plant**
+- [x] Gather Data about cost and activation function the choosen wind turbines
+- [x] Euclidian distance fitness function for placing the **power plant**
 - [ ] Collect **matplotlib** graphs, Pareto fronts in particular
 - [ ] Writing Analysis
 
