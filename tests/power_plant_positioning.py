@@ -1,4 +1,4 @@
-from src.fitness import calculate_distance_cost
+from src.fitness import PowerPlant
 import src.fitness
 import unittest
 import json
@@ -15,12 +15,17 @@ class TestCost(unittest.TestCase):
         a=[]
         counter=0
         for element in data:
-                a.append([element["wsid"],element["latitude"],element["longitude"], 1 if counter<1 else 0])
+                a.append([1 if counter<1 else 0, 0, 0])
                 counter+=1
+        cities=[]
+        for element in data:
+                cities.append([element["latitude"],element["longitude"]])
+
         a=list(map(list, zip(*a)))
 
-        b=calculate_distance_cost(a)
-        print(b)
+        b=PowerPlant(a, cities)
+        c=b.run()
+        print(c)
         result=0
 
         cities_file.close()
