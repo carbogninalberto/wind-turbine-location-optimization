@@ -11,6 +11,7 @@ from inspyred.ec import EvolutionaryComputation
 import inspyred_utils
 import plot_utils
 import utils
+import numpy as np
 
 def run_nsga2(random, problem, display=False, num_vars=0, use_bounder=True,
         variator=None, **kwargs) :
@@ -45,7 +46,7 @@ def run_nsga2(random, problem, display=False, num_vars=0, use_bounder=True,
     
     best_guy = final_pop[0].candidate[0:num_vars]
     print("best guy: ", final_pop[0].fitness)
-    print("best guy matrix:", utils.vector_to_matrix(final_pop[0].candidate, 1, 110))
+    print("best guy matrix:", np.array(utils.vector_to_matrix(final_pop[0].candidate, 2, 110)).transpose()[:, :])
     best_fitness = final_pop[0].fitness
     final_pop_fitnesses = asarray([guy.fitness for guy in final_pop])
     final_pop_candidates = asarray([guy.candidate[0:num_vars] for guy in final_pop])
@@ -70,4 +71,4 @@ def run_nsga2(random, problem, display=False, num_vars=0, use_bounder=True,
 
         plot_utils.plot_results_multi_objective_PF(final_pop, kwargs['fig_title'] + ' (Pareto front)')
 
-    return final_pop_candidates, final_pop_fitnesses
+    return final_pop_candidates, final_pop_fitnesses, final_pop[0].fitness

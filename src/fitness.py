@@ -50,9 +50,12 @@ def load_matrix_power(filename, wind_turbines):
         mean_power_file=open(filename, "r")
         data=json.load(mean_power_file)
         matrix = np.zeros((len(data), len(wind_turbines)), dtype=np.float32)
+        matrix_cities = np.zeros((len(data), 2), dtype=np.float32)
         n = 0
         t = 0
         for element in data:
+            matrix_cities[n][0] = element["latitude"]
+            matrix_cities[n][1] = element["longitude"]
             for turbine in wind_turbines:
                 matrix[n][t] = element[turbine]
                 t += 1
@@ -65,10 +68,7 @@ def load_matrix_power(filename, wind_turbines):
     finally:
         mean_power_file.close()
 
-
-    # create matrix_power
-    # close csv
-    return matrix.transpose()
+    return matrix.transpose(), matrix_cities
 
 ###########################################################
 

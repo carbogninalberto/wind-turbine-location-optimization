@@ -7,6 +7,7 @@ this file contains the wind turbines problem class and a bunch of custom functio
 from inspyred import benchmarks 
 from inspyred.ec.emo import Pareto
 from inspyred.ec.variators import mutator
+from inspyred.ec.variators import crossover
 import copy
 import fitness as fit
 import numpy as np
@@ -24,32 +25,44 @@ class WindTurbines():
         self.wind_turbines = wind_turbines
         self.wind_turbines_costs = wind_turbines_costs
         self.budget = budget
-        self.matrix_power = fit.load_matrix_power(self.matrix_power_filename, self.wind_turbines)
+        self.matrix_power, self.matrix_cities = fit.load_matrix_power(self.matrix_power_filename, self.wind_turbines)
         self.bounder = WindTurbinesBounder()
         self.objectives = 3
         self.maximize = True
         self.matrix_vector = []
+        self.generation = 0
 
 
     def generator(self, random, args):
-        return utils.matrix_to_vector([[np.random.randint(2) for i in range(self.n_cities)] for i in range(self.n_turbines)])[0] #np.random.randint(10, size=(self.n_turbines, self.n_cities)) #[np.random.randint(10) for _ in range(n_turbines)]
+        return utils.matrix_to_vector([[np.random.randint(1) for i in range(self.n_cities)] for i in range(self.n_turbines)])[0] #np.random.randint(10, size=(self.n_turbines, self.n_cities)) #[np.random.randint(10) for _ in range(n_turbines)]
 
     # fitness
     def evaluator(self, candidates, args):
         fitness = []
+        self.generation += 1
         for c in candidates:
             #print("c: ", c, "\n conversion: ", utils.vector_to_matrix(c, self.n_turbines, self.n_cities))
-            c_power = fit.wind_turbine_power_fitness(np.asmatrix(utils.vector_to_matrix(c, self.n_turbines, self.n_cities)), self.matrix_power)
+            c_power = fit.wind_turbine_power_fitness(np.array(utils.vector_to_matrix(c, self.n_turbines, self.n_cities)), self.matrix_power)
 
-            c_cost = fit.wind_turbine_cost_fitness(np.asmatrix(utils.vector_to_matrix(c, self.n_turbines, self.n_cities)), self.wind_turbines_costs)[0]
-            c_cost_power_plant = 0#0.005*(c_power**(-1)) # da cambiare con funzione distanza euclidea
+            c_cost = fit.wind_turbine_cost_fitness(np.array(utils.vector_to_matrix(c, self.n_turbines, self.n_cities)), self.wind_turbines_costs)[0]
+
+            power_plant = fit.PowerPlant(utils.vector_to_matrix(c, self.n_turbines, self.n_cities), self.matrix_cities.tolist()).run()
+
+            c_cost_power_plant = power_plant.fitness * 0.0001 # 0.02 -> 2 $ per km
+            print("cost of infrastracture:", c_cost_power_plant)
+            
+            #print("c_cost_power_plant", c_cost_power_plant)
+
+            #c_cost_power_plant = 0#0.005*(c_power**(-1)) # da cambiare con funzione distanza euclidea
 
             total_cost = (c_cost + c_cost_power_plant)
+
+            #print("total cost: ", total_cost, " c_cost_power_plant: ", c_cost_power_plant)
             
             fitness.append(ConstrainedPareto([c_power, total_cost],
                                              self.constraint_function(total_cost),
                                              self.maximize))
-            
+        print("GENERATION: [", self.generation, "] | fitness 3 individuals: ", fitness[:3])
         return fitness    
 
     def constraint_function(self,cost):
@@ -127,7 +140,7 @@ def wind_turbines_mutation(random, candidate, args):
     '''
     mut_rate = args.setdefault('mutation_rate', 0.1)
     mean = args.setdefault('gaussian_mean', 0.0)
-    stdev = args.setdefault('gaussian_stdev', 2.0)
+    stdev = args.setdefault('gaussian_stdev', 1.0)
     bounder = WindTurbinesBounder()
     mutant = copy.copy(candidate)
     for i, m in enumerate(mutant):
@@ -136,3 +149,58 @@ def wind_turbines_mutation(random, candidate, args):
     mutant = bounder(mutant, args)
     #print("mutant:", mutant, end="")
     return mutant
+
+@crossover
+def wind_turbines_blend_crossover(random, mom, dad, args):
+    """Return the offspring of blend crossover on the candidates.
+
+    This function performs blend crossover (BLX), which is similar to 
+    arithmetic crossover with a bit of mutation. It creates offspring
+    whose values are chosen randomly from a range bounded by the
+    parent alleles but that is also extended by some amount proportional
+    to the *blx_alpha* keyword argument. It is this extension of the
+    range that provides the additional exploration. This averaging is 
+    only done on the alleles listed in the *blx_points* keyword argument. 
+    If this argument is ``None``, then all alleles are used. This function 
+    also makes use of the bounder function as specified in the EC's 
+    ``evolve`` method.
+
+    .. Arguments:
+       random -- the random number generator object
+       mom -- the first parent candidate
+       dad -- the second parent candidate
+       args -- a dictionary of keyword arguments
+
+    Optional keyword arguments in args:
+    
+    - *crossover_rate* -- the rate at which crossover is performed 
+      (default 1.0)
+    - *blx_alpha* -- the blending rate (default 0.1)
+    - *blx_points* -- a list of points specifying the alleles to
+      recombine (default None)
+    
+    """
+    blx_alpha = args.setdefault('blx_alpha', 0.1)
+    blx_points = args.setdefault('blx_points', None)
+    crossover_rate = args.setdefault('crossover_rate', 1)
+    bounder = args['_ec'].bounder
+    children = []
+    if random.random() < crossover_rate:
+        bro = copy.copy(dad)
+        sis = copy.copy(mom)
+        if blx_points is None:
+            blx_points = list(range(min(len(bro), len(sis))))
+        for i in blx_points:
+            smallest, largest = min(mom[i], dad[i]), max(mom[i], dad[i])
+            delta = blx_alpha * (largest - smallest)
+            bro[i] = smallest - delta + random.random() * (largest - smallest + 2 * delta)
+            sis[i] = smallest - delta + random.random() * (largest - smallest + 2 * delta)
+        bro = bounder(bro, args)
+        sis = bounder(sis, args)
+        children.append(bro)
+        children.append(sis)
+    else:
+        children.append(mom)
+        children.append(dad)
+    return children    
+    
