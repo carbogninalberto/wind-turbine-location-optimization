@@ -25,13 +25,13 @@ display = False
 
 # parameters for NSGA-2
 args = {}
-args["pop_size"] = 50 
+args["pop_size"] = 20
 args["max_generations"] = 30
 constrained = True
-c_budget = 30 # in milion dollars
+c_budget = 1200 # in milion dollars
 
-wind_turbines=["E-115/3000", "E-126/4200"]
-wind_turbines_costs=[10.25, 0.8]
+wind_turbines=["E-115/3000", "E-126/4200", "V164/9500", "V117/3600", "V90/2000", "S152/6330", "S126/6150", "N100/2500"]
+wind_turbines_costs=[6.91, 10.6, 33.25, 8.69, 4.24, 18.46, 17.73, 5.53]
 
 """
 -------------------------------------------------------------------------
@@ -61,7 +61,7 @@ if __name__ == "__main__" :
     utils.vector_to_matrix(best_guy, len(wind_turbines), 110)
 
     #print ("Final Population\n", final_pop)
-    #print ("Final Population Fitnesses\n", final_pop_fitnesses)
+    print ("Final Population Fitnesses\n", final_pop_fitnesses)
 
 
     '''

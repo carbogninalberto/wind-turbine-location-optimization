@@ -34,7 +34,8 @@ class WindTurbines():
 
 
     def generator(self, random, args):
-        return utils.matrix_to_vector([[np.random.randint(1) for i in range(self.n_cities)] for i in range(self.n_turbines)])[0] #np.random.randint(10, size=(self.n_turbines, self.n_cities)) #[np.random.randint(10) for _ in range(n_turbines)]
+        #np.random.randint(1) 
+        return utils.matrix_to_vector([[ 0 for i in range(self.n_cities)] for i in range(self.n_turbines)])[0] #np.random.randint(10, size=(self.n_turbines, self.n_cities)) #[np.random.randint(10) for _ in range(n_turbines)]
 
     # fitness
     def evaluator(self, candidates, args):
@@ -44,24 +45,31 @@ class WindTurbines():
             #print("c: ", c, "\n conversion: ", utils.vector_to_matrix(c, self.n_turbines, self.n_cities))
             c_power = fit.wind_turbine_power_fitness(np.array(utils.vector_to_matrix(c, self.n_turbines, self.n_cities)), self.matrix_power)
 
-            c_cost = fit.wind_turbine_cost_fitness(np.array(utils.vector_to_matrix(c, self.n_turbines, self.n_cities)), self.wind_turbines_costs)[0]
+            c_cost, cities_with = fit.wind_turbine_cost_fitness(np.array(utils.vector_to_matrix(c, self.n_turbines, self.n_cities)), self.wind_turbines_costs)
+
+            #print(c_cost, cities_with)
 
             power_plant = fit.PowerPlant(utils.vector_to_matrix(c, self.n_turbines, self.n_cities), self.matrix_cities.tolist()).run()
 
-            c_cost_power_plant = power_plant.fitness * 0.0001 # 0.02 -> 2 $ per km
-            print("cost of infrastracture:", c_cost_power_plant)
-            
-            #print("c_cost_power_plant", c_cost_power_plant)
-
-            #c_cost_power_plant = 0#0.005*(c_power**(-1)) # da cambiare con funzione distanza euclidea
+            c_cost_power_plant = power_plant.fitness * 0.01 # 0.02 -> 2 $ per km
 
             total_cost = (c_cost + c_cost_power_plant)
 
-            #print("total cost: ", total_cost, " c_cost_power_plant: ", c_cost_power_plant)
+            '''
+            penalty
+            '''
+
+            if (self.budget - total_cost) < 0:
+                c_power = 0
             
+            
+            '''
             fitness.append(ConstrainedPareto([c_power, total_cost],
                                              self.constraint_function(total_cost),
                                              self.maximize))
+            '''
+
+            fitness.append(Pareto([c_power, total_cost], self.maximize))
         print("GENERATION: [", self.generation, "] | fitness 3 individuals: ", fitness[:3])
         return fitness    
 
@@ -70,7 +78,7 @@ class WindTurbines():
 
         violations = 0
         if (self.budget - cost) <= 0:
-            violations += 1/self.budget - 1/cost
+            violations += 1/(self.budget - cost + 0.00001) #1/self.budget - 1/cost
 
         return violations #0 if (self.budget - cost) > 0 else self.budget - cost
 
@@ -138,9 +146,9 @@ def wind_turbines_mutation(random, candidate, args):
     '''
     Customized gaussian mutation to integer
     '''
-    mut_rate = args.setdefault('mutation_rate', 0.1)
+    mut_rate = args.setdefault('mutation_rate', 0.01)
     mean = args.setdefault('gaussian_mean', 0.0)
-    stdev = args.setdefault('gaussian_stdev', 1.0)
+    stdev = args.setdefault('gaussian_stdev', 0.1)
     bounder = WindTurbinesBounder()
     mutant = copy.copy(candidate)
     for i, m in enumerate(mutant):
@@ -182,7 +190,7 @@ def wind_turbines_blend_crossover(random, mom, dad, args):
     """
     blx_alpha = args.setdefault('blx_alpha', 0.1)
     blx_points = args.setdefault('blx_points', None)
-    crossover_rate = args.setdefault('crossover_rate', 1)
+    crossover_rate = args.setdefault('crossover_rate', 0.2)
     bounder = args['_ec'].bounder
     children = []
     if random.random() < crossover_rate:
