@@ -30,7 +30,7 @@ def wind_turbine_power_fitness(matrix, matrix_power):
     for city in matrix_t:
         result = np.append(result, [np.sum(city*matrix_power_t[row_index,:]*degradation_coefficient(matrix, row_index), dtype=np.float32)])
         row_index += 1
-    return np.sum(result, dtype=np.float32)**(-1)
+    return np.sum(result, dtype=np.float32)#**(-1)
 
 '''
 coefficient of degradation for placing more than one turbine z(x)
@@ -71,12 +71,41 @@ def load_matrix_power(filename, wind_turbines):
     return matrix.transpose()
 
 ###########################################################
+
+
+#################### OBJECTIVE 2: T_c(S) ####################
+'''
+Fitness function for turbine cost:
+Given a matrix S, calculate the aggregate cost of this layout
+and return the tuple:
+(cost, list of cities with turbines)
+'''
+def wind_turbine_cost_fitness(matrix, turbines_cost):
+    matrix_t = matrix.transpose()
+    cities_with_turbines = np.array([], dtype=np.int32)
+    fitness = np.array([])
+    city_index = 0
+
+    for city in matrix_t:
+        for i in range(len(city)):
+            if city[i] > 0:
+                cities_with_turbines = np.append(cities_with_turbines, city_index)
+            fitness = np.append(fitness, city[i]*turbines_cost[i])
+        city_index += 1
+
+    return (np.sum(fitness, dtype=np.float32), cities_with_turbines)
+
+###########################################################
+
+#################### OBJECTIVE 3: PP(S) ####################
+
 class PowerPlant():
 
-    def __init__(self, turbines_matrix, cities):
+    def __init__(self, turbines_matrix, cities, number):
         self.turbines_matrix = turbines_matrix
         self.cities = cities
         self.contains_turbines = [False] * len(turbines_matrix[0])
+        self.n_power_plants = number
 
 
     def distance(self, lat1, lon1, lat2, lon2):
@@ -107,7 +136,7 @@ class PowerPlant():
         base_lat = -20.41
         base_lon = -44.95
         k=2
-        return [base_lat + random.uniform(-k,k), base_lon + random.uniform(-k,k)]
+        return [base_lat + random.uniform(-k,k), base_lon + random.uniform(-k,k)] * self.n_power_plants
 
 
     def evaluate_power_plants(self, candidates, *args):
@@ -116,10 +145,19 @@ class PowerPlant():
         for cs in candidates:
             d=0
             for i in range(len(self.cities)):
+                k = 1
                 if(self.contains_turbines[i]):
-                    d+=self.distancec(self.cities[i], cs)*turbine_cables_weight
-                else:
-                    d+=self.distancec(self.cities[i], cs)
+                    k = turbine_cables_weight
+
+                min = 999999999
+                dist = 999999999
+                for j in range(self.n_power_plants):
+
+                    t = [cs[0+j*2], cs[1+j*2]]
+                    dist = self.distancec(self.cities[i], t) * k
+                    if (dist<min):
+                        min=dist
+                d+=min
             fitness.append(d)
         return fitness
 
@@ -145,7 +183,6 @@ class PowerPlant():
         final_pop.sort(reverse=True)
         return final_pop[0]
 
-
 ###########################################################
 
 #TESTS
@@ -168,12 +205,24 @@ if __name__ == "__main__":
     print("col. n. 0")
     print(degradation_coefficient(test_matrix,0))
 
-
     #testing load_matrix_power
     print("\n\n<EXECUTE OUTPUT> \t\t\tload_matrix_power()")
     print("-----------------------------------------------------------------------")
     print("generated matrix:")
     loaded_matrix = load_matrix_power("../dataParsingScripts/mean_power.json", ["E-115/3000"])
-    print(loaded_matrix)
+    print(loaded_matrix, "shape: ", loaded_matrix.shape)
+
+    #testing wind_turbine_cost_fitness
+    print("\n\n<EXECUTE OUTPUT> \t\t\wind_turbine_cost_fitness()")
+    print("-----------------------------------------------------------------------")
+    print("random matrix:")
+    print(loaded_matrix.shape)
+    random_matrix = np.random.randint(2, size=loaded_matrix.shape)
+    print(random_matrix)
+
+    print("\ncost tuple:")
+    cost_tuple = wind_turbine_cost_fitness(random_matrix, [1.25])
+
+    print(str(float(cost_tuple[0]*10**6)) + "$")
 
     print("\n[END TESTS]\n")
