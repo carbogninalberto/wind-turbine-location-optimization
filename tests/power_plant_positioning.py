@@ -23,9 +23,12 @@ class TestCost(unittest.TestCase):
 
         a=list(map(list, zip(*a)))
 
-        b=PowerPlant(a, cities)
+        n_power_plant = 4
+        b=PowerPlant(a, cities, n_power_plant)
         c=b.run()
-        print(c)
+        for i in range(n_power_plant):
+            print(c.candidate[0+i*2],",",c.candidate[1+i*2])
+
         result=0
 
         cities_file.close()

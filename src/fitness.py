@@ -101,10 +101,11 @@ def wind_turbine_cost_fitness(matrix, turbines_cost):
 
 class PowerPlant():
 
-    def __init__(self, turbines_matrix, cities):
+    def __init__(self, turbines_matrix, cities, number):
         self.turbines_matrix = turbines_matrix
         self.cities = cities
         self.contains_turbines = [False] * len(turbines_matrix[0])
+        self.n_power_plants = number
 
 
     def distance(self, lat1, lon1, lat2, lon2):
@@ -135,7 +136,7 @@ class PowerPlant():
         base_lat = -20.41
         base_lon = -44.95
         k=2
-        return [base_lat + random.uniform(-k,k), base_lon + random.uniform(-k,k)]
+        return [base_lat + random.uniform(-k,k), base_lon + random.uniform(-k,k)] * self.n_power_plants
 
 
     def evaluate_power_plants(self, candidates, *args):
@@ -144,10 +145,19 @@ class PowerPlant():
         for cs in candidates:
             d=0
             for i in range(len(self.cities)):
+                k = 1
                 if(self.contains_turbines[i]):
-                    d+=self.distancec(self.cities[i], cs)*turbine_cables_weight
-                else:
-                    d+=self.distancec(self.cities[i], cs)
+                    k = turbine_cables_weight
+
+                min = 999999999
+                dist = 999999999
+                for j in range(self.n_power_plants):
+
+                    t = [cs[0+j*2], cs[1+j*2]]
+                    dist = self.distancec(self.cities[i], t) * k
+                    if (dist<min):
+                        min=dist
+                d+=min
             fitness.append(d)
         return fitness
 
