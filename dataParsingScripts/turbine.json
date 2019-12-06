@@ -1,7 +1,7 @@
 [
     {
-        "turbine_type": "E-115/3000",
-        "hub_height": 92
+        "turbine_type": "E-126/4200",
+        "hub_height": 135
     },
     {
          "wind_speed_model": "logarithmic",
