@@ -1,11 +1,13 @@
 # 🎏 Wind Turbines Multi-Objective Optimization
-In this project we aim to solve a multi objective optimization problem using **Evolutionary Algorithms** and **Swarm Intelligence Optimization**.
+In this project we aim to solve a multi objective optimization problem using **Evolutionary Algorithms** and **Particle Swarm Intelligence Optimization**.
 - [x] EA (partially implemented)
-- [ ] SO
+- [ ] PSO
 
-💡 We actually found a dataset containing information about the weather in Brasil, [here the reference](https://www.kaggle.com/PROPPG-PPG/hourly-weather-surface-brazil-southeast-region).
+You have been commissioned by Brazil to find in which city to place wind turbines in order to maximize the **energy production**, plus you have also to decide where to place a **power plant** in order to minimize infrastracture cost; you have a limited budget too 🤯. Will you be able to find the solution for **110 cities** that are very far from each other? 😈
 
-Given a certain array of budgets, (for example [ "5,000,000.00$", "12,000,000.00$", "2,000,000.00$" ]), we want to optimize the placement of wind turbines in the Brazil region by considering the following:
+💡 We actually found a dataset containing information about the weather in Brazil, [here the reference](https://www.kaggle.com/PROPPG-PPG/hourly-weather-surface-brazil-southeast-region).
+
+Given a certain array of budgets, (for example [ "50,000,000.00$", "120,000,000.00$", "20,000,000.00$" ]), we want to optimize the placement of wind turbines in the Brazil region by considering the following:
 - **Power Plant**: transport energy from wind turbines to power plant and from power plant to cities
 - **Budget constraint**: it's not possible to spend more money than that
 - **Limited types of wind turbines**: there are more than one kind of wind turbines
