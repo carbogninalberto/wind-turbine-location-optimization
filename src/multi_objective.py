@@ -82,7 +82,7 @@ def run_nsga2(random, problem, display=False, num_vars=0, use_bounder=True,
     plot_utils.plot_results_multi_objective_PF(final_pop, kwargs['fig_title'] + ' (Pareto front)')
     
     '''
-
+    
     plot_utils.plot_results_multi_objective_PF(final_pop, kwargs['fig_title'] + ' (Pareto front)')
 
     return final_pop_candidates, final_pop_fitnesses, final_pop[0].fitness

@@ -58,19 +58,19 @@ class WindTurbines():
 
             '''
             penalty
-            '''
+            
 
             if (self.budget - total_cost) < 0:
                 c_power = 0
+
+            ''' 
             
-            
-            '''
             fitness.append(ConstrainedPareto([c_power, total_cost],
                                              self.constraint_function(total_cost),
                                              self.maximize))
-            '''
 
-            fitness.append(Pareto([c_power, total_cost], self.maximize))
+            #fitness.append(Pareto([c_power, total_cost], self.maximize))
+            
         print("GENERATION: [", self.generation, "] | fitness 3 individuals: ", fitness[:3])
         return fitness    
 
