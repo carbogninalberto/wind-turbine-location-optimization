@@ -37,7 +37,7 @@ wind_turbines_costs=[6.91, 10.6, 33.25, 8.69, 4.24, 18.46, 17.73, 5.53]
 -------------------------------------------------------------------------
 """
 
-problem = WindTurbines(n_turbines=len(wind_turbines), budget=c_budget, wind_turbines=wind_turbines, wind_turbines_costs=wind_turbines_costs)
+problem = WindTurbines(n_turbines=len(wind_turbines), budget=c_budget, wind_turbines=wind_turbines, wind_turbines_costs=wind_turbines_costs, n_powerplants=5)
 if constrained :
     args["constraint_function"] = problem.constraint_function
 args["objective_1"] = "Produced Power (Kw/h)"
@@ -74,7 +74,7 @@ if __name__ == "__main__" :
                             fitness))
         output.write("\n")
     output.close()
-    
+    '''
     ioff()
     show()
-    '''
+    

@@ -18,7 +18,7 @@ import math
 Wind Location Optimization Problem
 '''
 class WindTurbines():
-    def __init__(self, n_turbines=1, n_cities=110, matrix_power_filename="../dataParsingScripts/mean_power.json", wind_turbines=["E-115/3000"], wind_turbines_costs=[1.25], budget=50):
+    def __init__(self, n_turbines=1, n_cities=110, matrix_power_filename="../dataParsingScripts/mean_power.json", wind_turbines=["E-115/3000"], wind_turbines_costs=[1.25], budget=50, n_powerplants=1):
         self.n_turbines = n_turbines
         self.n_cities = n_cities
         self.matrix_power_filename = matrix_power_filename
@@ -31,6 +31,7 @@ class WindTurbines():
         self.maximize = True
         self.matrix_vector = []
         self.generation = 0
+        self.n_powerplants = n_powerplants
 
 
     def generator(self, random, args):
@@ -49,7 +50,7 @@ class WindTurbines():
 
             #print(c_cost, cities_with)
 
-            power_plant = fit.PowerPlant(utils.vector_to_matrix(c, self.n_turbines, self.n_cities), self.matrix_cities.tolist()).run()
+            power_plant = fit.PowerPlant(utils.vector_to_matrix(c, self.n_turbines, self.n_cities), self.matrix_cities.tolist(), 10).run()
 
             c_cost_power_plant = power_plant.fitness * 0.01 # 0.02 -> 2 $ per km
 

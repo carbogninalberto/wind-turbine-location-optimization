@@ -190,6 +190,8 @@ def plot_results_multi_objective_PF(individuals, title) :
                 axes[i,j].set_ylabel('f'+str(i))
         f.subplots_adjust(hspace=0.30)
         f.subplots_adjust(wspace=0.30)
+    
+    print("done")
 
 """
     the original plot_observer
