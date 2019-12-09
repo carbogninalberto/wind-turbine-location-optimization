@@ -45,43 +45,14 @@ def run_nsga2(random, problem, display=False, num_vars=0, use_bounder=True,
                           **kwargs)         
     
     best_guy = final_pop[0].candidate[0:num_vars]
+
     print("best guy: ", final_pop[0].fitness)
-    print("best guy matrix:", np.array(utils.vector_to_matrix(final_pop[0].candidate, 2, 110)).transpose()[:, :])
+    print("best guy matrix:", np.array(utils.vector_to_matrix(final_pop[0].candidate, 8, 110)).transpose()[:, :])
+
     best_fitness = final_pop[0].fitness
+    #final_pop.sort(reverse=False)
     final_pop_fitnesses = asarray([guy.fitness for guy in final_pop])
-    final_pop_candidates = asarray([guy.candidate[0:num_vars] for guy in final_pop])
-
-    if display :
-        # Plot the parent and the offspring on the fitness landscape 
-        # (only for 1D or 2D functions)
-        if num_vars == 1 :
-            plot_utils.plot_results_multi_objective_1D(problem, 
-                                  initial_pop_storage["individuals"], 
-                                  initial_pop_storage["fitnesses"], 
-                                  final_pop_candidates, final_pop_fitnesses,
-                                  'Initial Population', 'Final Population',
-                                  len(final_pop_fitnesses[0]), kwargs)
-    
-        elif num_vars == 2 :
-            plot_utils.plot_results_multi_objective_2D(problem, 
-                                  initial_pop_storage["individuals"], 
-                                  final_pop_candidates, 'Initial Population',
-                                  'Final Population',
-                                  len(final_pop_fitnesses[0]), kwargs)
-
-        plot_utils.plot_results_multi_objective_PF(final_pop, kwargs['fig_title'] + ' (Pareto front)')
-
-    
-    '''
-    plot_utils.plot_results_multi_objective_2D(problem, 
-                                  initial_pop_storage["individuals"], 
-                                  final_pop_candidates, 'Initial Population',
-                                  'Final Population',
-                                  len(final_pop_fitnesses[0]), kwargs)
-
-    plot_utils.plot_results_multi_objective_PF(final_pop, kwargs['fig_title'] + ' (Pareto front)')
-    
-    '''
+    final_pop_candidates = asarray([guy.candidate[:] for guy in final_pop])
     
     plot_utils.plot_results_multi_objective_PF(final_pop, kwargs['fig_title'] + ' (Pareto front)')
 

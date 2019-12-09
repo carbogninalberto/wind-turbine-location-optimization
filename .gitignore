@@ -2,6 +2,8 @@ dataParsingScripts/*.csv
 db/*.csv
 db/insertCities.sql
 db/insertWinds.sql
+output/*
 
 .directory
 __pycache__
+

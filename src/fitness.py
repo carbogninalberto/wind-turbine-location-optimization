@@ -28,7 +28,7 @@ def wind_turbine_power_fitness(matrix, matrix_power):
     result = np.array([0.0001], dtype=np.float32)
     row_index = 0
     for city in matrix_t:
-        result = np.append(result, [np.sum(city*matrix_power_t[row_index,:]*degradation_coefficient(matrix, row_index), dtype=np.float32)])
+        result = np.append(result, [np.sum(city*(matrix_power_t[row_index,:]*10**(-6))*degradation_coefficient(matrix, row_index), dtype=np.float32)])
         row_index += 1
     return np.sum(result, dtype=np.float32)#**(-1)
 

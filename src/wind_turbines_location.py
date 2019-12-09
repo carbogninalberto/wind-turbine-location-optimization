@@ -30,8 +30,11 @@ class WindTurbines():
         self.objectives = 3
         self.maximize = True
         self.matrix_vector = []
-        self.generation = 0
+        self.generation = -1
         self.n_powerplants = n_powerplants
+        self.powerplants = []
+        self.best_fitness = []
+        self.best_fitness_power = 0
 
 
     def generator(self, random, args):
@@ -51,49 +54,39 @@ class WindTurbines():
             #print(c_cost, cities_with)
 
             power_plant = fit.PowerPlant(utils.vector_to_matrix(c, self.n_turbines, self.n_cities), self.matrix_cities.tolist(), 10).run()
-
-            c_cost_power_plant = power_plant.fitness * 0.01 # 0.02 -> 2 $ per km
+            
+            '''
+            the cost of building transmission line for electrcity is 2.24 mil. Dollars per km
+            Transporting actualy electrcity costs 3.61 dollars per km per kW. 
+            '''
+            c_cost_power_plant = power_plant.fitness * (3.61*10**(-6))*(c_power*10**(6)) # 0.02 -> 2 $ per km
+            #c_cost_power_plant = power_plant.fitness * 0.01 # 0.02 -> 2 $ per km
 
             total_cost = (c_cost + c_cost_power_plant)
 
+            # 0: lat, 1: long
+            #print("lat,lon")
+            for i in range(self.n_powerplants):
+                #print(power_plant.candidate[0+i*2],",",power_plant.candidate[1+i*2])
+                if self.best_fitness_power <= c_power and [c_power, total_cost] >=  self.best_fitness:
+                    self.best_fitness = [c_power, total_cost]
+                    self.best_fitness_power = c_power
+                    self.powerplants.append([power_plant.candidate[0+i*2], power_plant.candidate[1+i*2]])
+
             '''
             penalty
-            
-
             if (self.budget - total_cost) < 0:
                 c_power = 0
 
             ''' 
-            
-            fitness.append(ConstrainedPareto([c_power, total_cost],
-                                             self.constraint_function(total_cost),
-                                             self.maximize))
 
-            #fitness.append(Pareto([c_power, total_cost], self.maximize))
-            
-        print("GENERATION: [", self.generation, "] | fitness 3 individuals: ", fitness[:3])
+            fitness.append(Pareto([c_power, total_cost], [True, False]))
+        
+        print("GENERATION: [", self.generation, "] | fitness of 3 individuals (not sorted): ", fitness[:3])
         return fitness    
-
-    def constraint_function(self,cost):
-        #print("budget violation:", self.budget - cost)
-
-        violations = 0
-        if (self.budget - cost) <= 0:
-            violations += 1/(self.budget - cost + 0.00001) #1/self.budget - 1/cost
-
-        return violations #0 if (self.budget - cost) > 0 else self.budget - cost
 
 class WindTurbinesBounder(object):    
     def __call__(self, candidate, args):
-        '''
-        we cannot evolve to negative values of turbines
-        
-        for i in range(candidate):
-            for j in range(candidate[i]):
-                if float(candidate[i][j]) < 0.0:
-                    candidate[i][j] = 0
-
-        '''
 
         for i in range(len(candidate)):
             candidate[i] = math.ceil(candidate[i]) #clean round up
@@ -102,46 +95,6 @@ class WindTurbinesBounder(object):
 
         return candidate
 
-class ConstrainedPareto(Pareto):
-    def __init__(self, values=None, violations=None, ec_maximize=True):
-        Pareto.__init__(self, values)
-        self.violations = violations
-        self.ec_maximize=ec_maximize
-    
-    def __lt__(self, other):
-        if self.violations is None :
-            return Pareto.__lt__(self, other)
-        elif len(self.values) != len(other.values):
-            raise NotImplementedError
-        else:
-            if self.violations > other.violations :
-                # if self has more violations than other
-                # return true if EC is maximizing otherwise false 
-                return (self.ec_maximize)
-            elif other.violations > self.violations :
-                # if other has more violations than self
-                # return true if EC is minimizing otherwise false  
-                return (not self.ec_maximize)
-            elif self.violations > 0 :
-                # if both equally infeasible (> 0) than cannot compare
-                return False
-            else :
-                # only consider regular dominance if both are feasible
-                not_worse = True
-                strictly_better = False 
-                for x, y, m in zip(self.values, other.values, self.maximize):                    
-                    if m:
-                        if x > y:
-                            not_worse = False
-                        elif y > x:
-                            strictly_better = True
-                    else:
-                        if x < y:
-                            not_worse = False
-                        elif y < x:
-                            strictly_better = True
-            return not_worse and strictly_better
-
 @mutator    
 def wind_turbines_mutation(random, candidate, args):
     '''
@@ -149,7 +102,7 @@ def wind_turbines_mutation(random, candidate, args):
     '''
     mut_rate = args.setdefault('mutation_rate', 0.01)
     mean = args.setdefault('gaussian_mean', 0.0)
-    stdev = args.setdefault('gaussian_stdev', 0.1)
+    stdev = args.setdefault('gaussian_stdev', 0.2)
     bounder = WindTurbinesBounder()
     mutant = copy.copy(candidate)
     for i, m in enumerate(mutant):

@@ -13,8 +13,9 @@ from wind_turbines_location import WindTurbines, wind_turbines_mutation, wind_tu
 
 import multi_objective
 import utils
+import time
 
-import sys
+import sys, os
 
 """ 
 -------------------------------------------------------------------------
@@ -25,9 +26,8 @@ display = False
 
 # parameters for NSGA-2
 args = {}
-args["pop_size"] = 20
-args["max_generations"] = 30
-constrained = True
+args["pop_size"] = 5
+args["max_generations"] = 10
 c_budget = 1200 # in milion dollars
 
 wind_turbines=["E-115/3000", "E-126/4200", "V164/9500", "V117/3600", "V90/2000", "S152/6330", "S126/6150", "N100/2500"]
@@ -38,8 +38,6 @@ wind_turbines_costs=[6.91, 10.6, 33.25, 8.69, 4.24, 18.46, 17.73, 5.53]
 """
 
 problem = WindTurbines(n_turbines=len(wind_turbines), budget=c_budget, wind_turbines=wind_turbines, wind_turbines_costs=wind_turbines_costs, n_powerplants=3)
-if constrained :
-    args["constraint_function"] = problem.constraint_function
 args["objective_1"] = "Produced Power (Kw/h)"
 args["objective_2"] = "Cost ($)"
 
@@ -63,19 +61,42 @@ if __name__ == "__main__" :
     #print ("Final Population\n", final_pop)
     print ("Final Population Fitnesses\n", final_pop_fitnesses)
 
-
-    '''
-    output = open("exercise_1.csv", "w")
-    for individual, fitness in zip(final_pop, final_pop_fitnesses) :
-        output.write(reduce(lambda x,y : str(x) + "," + str(y), 
-                            individual))
-        output.write(",")
-        output.write(reduce(lambda x,y : str(x) + "," + str(y), 
-                            fitness))
-        output.write("\n")
-    output.close()
-    '''
     ioff()
     #show()
-    savefig('pareto.png')
+    os.mkdir('../output/')
+    timestamp = str(int(round(time.time() * 1000)))
+    folder = '../output/'+timestamp
+    os.mkdir(folder)
+
+    paretofront = folder + "/" + timestamp + "_pareto.png"
+
+    output = open(folder+"/_pareto_front.csv", "w")
+    for individual, fitness in zip(final_pop, final_pop_fitnesses) :
+        #print(individual)
+        individual_row = np.array2string(individual, formatter={'float_kind':lambda x: "%.2f" % individual})
+        output.write(individual_row)
+        output.write(",")
+        fitness_row = str(fitness) #np.array2string(fitness, formatter={'float_kind':lambda x: "%.2f" % fitness})
+        output.write(fitness_row)
+        output.write("\n")
+    output.close()
+
+
+    best_output = open(folder+"/_best.csv", "w")
+    individual_row = np.array2string(final_pop[0], formatter={'float_kind':lambda x: "%.2f" % final_pop[0]})
+    best_output.write(individual_row)
+
+    best_output.write(",")
+    fitness_row = str(final_pop_fitnesses[0])
+    best_output.write(fitness_row)
+    
+    best_output.write(",")
+    best_output.write(str(problem.powerplants[:3]))
+
+    best_output.write("\n")
+    best_output.close()
+
+
+
+    savefig(paretofront)
     
