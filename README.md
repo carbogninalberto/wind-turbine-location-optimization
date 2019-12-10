@@ -22,7 +22,7 @@ We want to optimize the placement of wind turbines in the Brazil region by consi
 - [x] Implement fitness function for wind turbines placement
 - [x] Gather Data about cost and activation function the choosen wind turbines
 - [x] Euclidian distance fitness function for placing the **power plant**
-- [ ] Collect **matplotlib** graphs, Pareto fronts in particular
+- [x] Collect **matplotlib** graphs, Pareto fronts in particular
 - [ ] Writing Analysis
 
 ___
