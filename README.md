@@ -9,7 +9,6 @@ In this project we aim to solve a multi objective optimization problem using **E
 
 We want to optimize the placement of wind turbines in the Brazil region by considering the following:
 - **Power Plant**: transport energy from wind turbines to power plant and from power plant to cities
-- **Budget constraint**: it's not possible to spend more money than that
 - **Limited types of wind turbines**: there are more than one kind of wind turbines
 
 ### 🚀 Project Timeline
