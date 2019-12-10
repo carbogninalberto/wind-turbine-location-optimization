@@ -3,11 +3,11 @@ In this project we aim to solve a multi objective optimization problem using **E
 - [x] EA (partially implemented)
 - [ ] PSO
 
-#### You have been commissioned by Brazil to find in which city to place wind turbines in order to maximize the **energy production**, plus you have also to decide where to place a **power plant** in order to minimize infrastracture cost; you have a limited budget too 🤯. Will you be able to find the solution for **110 cities** that are very far from each other? 😈
+#### You have been commissioned by Brazil to find in which city to place wind turbines in order to maximize the **energy production**, plus you have also to decide where to place a **power plant** in order to minimize infrastracture cost 🤯. Will you be able to find the solution for **110 cities** that are very far from each other? 😈
 
 💡 We actually found a dataset containing information about the weather in Brazil, [here the reference](https://www.kaggle.com/PROPPG-PPG/hourly-weather-surface-brazil-southeast-region).
 
-Given a certain array of budgets, (for example [ "50,000,000.00$", "120,000,000.00$", "20,000,000.00$" ]), we want to optimize the placement of wind turbines in the Brazil region by considering the following:
+We want to optimize the placement of wind turbines in the Brazil region by considering the following:
 - **Power Plant**: transport energy from wind turbines to power plant and from power plant to cities
 - **Budget constraint**: it's not possible to spend more money than that
 - **Limited types of wind turbines**: there are more than one kind of wind turbines
