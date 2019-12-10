@@ -1,6 +1,6 @@
 # 🎏 Wind Turbines Multi-Objective Optimization
 In this project we aim to solve a multi objective optimization problem using **Evolutionary Algorithms** and **Particle Swarm Intelligence Optimization**.
-- [x] EA (partially implemented)
+- [x] EA (implemented)
 - [ ] PSO
 
 #### You have been commissioned by Brazil to find in which city to place wind turbines in order to maximize the **energy production**, plus you have also to decide where to place a **power plant** in order to minimize infrastracture cost 🤯. Will you be able to find the solution for **110 cities** that are very far from each other? 😈
